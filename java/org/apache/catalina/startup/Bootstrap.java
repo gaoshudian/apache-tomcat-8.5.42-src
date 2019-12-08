@@ -162,8 +162,7 @@ public final class Bootstrap {
     }
 
 
-    private ClassLoader createClassLoader(String name, ClassLoader parent)
-            throws Exception {
+    private ClassLoader createClassLoader(String name, ClassLoader parent) throws Exception {
 
         String value = CatalinaProperties.getProperty(name + ".loader");
         // catalinaLoader与sharedLoader的加载路径均为空，所以直接返回commonLoader对象，默认3者为同一个对象
@@ -181,8 +180,7 @@ public final class Bootstrap {
             try {
                 @SuppressWarnings("unused")
                 URL url = new URL(repository);
-                repositories.add(
-                        new Repository(repository, RepositoryType.URL));
+                repositories.add(new Repository(repository, RepositoryType.URL));
                 continue;
             } catch (MalformedURLException e) {
                 // Ignore
@@ -190,16 +188,12 @@ public final class Bootstrap {
 
             // 本地仓库
             if (repository.endsWith("*.jar")) {
-                repository = repository.substring
-                        (0, repository.length() - "*.jar".length());
-                repositories.add(
-                        new Repository(repository, RepositoryType.GLOB));
+                repository = repository.substring(0, repository.length() - "*.jar".length());
+                repositories.add(new Repository(repository, RepositoryType.GLOB));
             } else if (repository.endsWith(".jar")) {
-                repositories.add(
-                        new Repository(repository, RepositoryType.JAR));
+                repositories.add(new Repository(repository, RepositoryType.JAR));
             } else {
-                repositories.add(
-                        new Repository(repository, RepositoryType.DIR));
+                repositories.add(new Repository(repository, RepositoryType.DIR));
             }
         }
 
@@ -283,8 +277,7 @@ public final class Bootstrap {
         Object paramValues[] = new Object[1];
         //这里把shared加载器传递给catalina
         paramValues[0] = sharedLoader;
-        Method method =
-                startupInstance.getClass().getMethod(methodName, paramTypes);
+        Method method = startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
 
         catalinaDaemon = startupInstance;
@@ -295,8 +288,7 @@ public final class Bootstrap {
     /**
      * Load daemon.
      */
-    private void load(String[] arguments)
-            throws Exception {
+    private void load(String[] arguments) throws Exception {
         System.out.println("Bootsrap--load()");
         // Call the load() method
         String methodName = "load";
@@ -311,8 +303,7 @@ public final class Bootstrap {
             param = new Object[1];
             param[0] = arguments;
         }
-        Method method =
-                catalinaDaemon.getClass().getMethod(methodName, paramTypes);
+        Method method = catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled())
             log.debug("Calling startup class " + method);
         method.invoke(catalinaDaemon, param);
@@ -356,8 +347,7 @@ public final class Bootstrap {
      *
      * @throws Exception Fatal start error
      */
-    public void start()
-            throws Exception {
+    public void start() throws Exception {
 
         if (catalinaDaemon == null) init();
         System.out.println("Bootsrap--start()");
@@ -471,6 +461,7 @@ public final class Bootstrap {
      */
     public static void main(String args[]) {
 
+        //初始化阶段
         if (daemon == null) {
             // Don't set daemon until init() has completed
             //在init（）完成之前不要设置守护进程
@@ -490,6 +481,7 @@ public final class Bootstrap {
             Thread.currentThread().setContextClassLoader(daemon.catalinaLoader);
         }
 
+        //运行阶段
         try {
             String command = "start";
             if (args.length > 0) {

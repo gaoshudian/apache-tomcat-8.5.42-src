@@ -149,8 +149,7 @@ public final class ClassLoaderFactory {
      * @exception Exception if an error occurs constructing the class loader
      */
     public static ClassLoader createClassLoader(List<Repository> repositories,
-                                                final ClassLoader parent)
-        throws Exception {
+                                                final ClassLoader parent) throws Exception {
 
         if (log.isDebugEnabled())
             log.debug("Creating new class loader");
