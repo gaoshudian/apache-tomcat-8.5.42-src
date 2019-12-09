@@ -24,7 +24,6 @@ import java.io.PrintStream;
  *
  * @author Glenn L. Nielsen
  */
-
 class CaptureLog {
 
     protected CaptureLog() {
@@ -33,6 +32,7 @@ class CaptureLog {
     }
 
     private final ByteArrayOutputStream baos;
+
     private final PrintStream ps;
 
     protected PrintStream getStream() {

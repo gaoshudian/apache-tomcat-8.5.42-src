@@ -1114,6 +1114,7 @@ public abstract class AbstractEndpoint<S> {
     public abstract void stopInternal() throws Exception;
 
     public void init() throws Exception {
+        // 执行bind()方法
         if (bindOnInit) {
             bind();
             bindState = BindState.BOUND_ON_INIT;

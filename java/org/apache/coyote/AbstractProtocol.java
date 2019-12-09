@@ -570,14 +570,15 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
         if (this.domain != null) {
             rgOname = new ObjectName(domain + ":type=GlobalRequestProcessor,name=" + getName());
-            Registry.getRegistry(null, null).registerComponent(
-                    getHandler().getGlobal(), rgOname, null);
+            Registry.getRegistry(null, null).registerComponent(getHandler().getGlobal(), rgOname, null);
         }
 
+        // 1. 设置endpoint的名字，默认为：http-nio-{port}
         String endpointName = getName();
         endpoint.setName(endpointName.substring(1, endpointName.length()-1));
         endpoint.setDomain(domain);
 
+        // 2. 初始化endpoint
         endpoint.init();
     }
 
@@ -588,9 +589,10 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
             getLog().info(sm.getString("abstractProtocolHandler.start", getName()));
         }
 
+        // 1. 调用`Endpoint.start()`方法
         endpoint.start();
 
-        // Start async timeout thread
+        // 2. 开启异步超时线程，线程执行单元为`Asynctimeout`
         asyncTimeout = new AsyncTimeout();
         Thread timeoutThread = new Thread(asyncTimeout, getNameInternal() + "-AsyncTimeout");
         int priority = endpoint.getThreadPriority();
