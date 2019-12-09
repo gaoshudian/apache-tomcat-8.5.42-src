@@ -45,8 +45,7 @@ import org.apache.tomcat.util.res.StringManager;
  * @author Remy Maucherat
  * @author Costin Manolache
  */
-public class MapperListener extends LifecycleMBeanBase
-        implements ContainerListener, LifecycleListener {
+public class MapperListener extends LifecycleMBeanBase implements ContainerListener, LifecycleListener {
 
 
     private static final Log log = LogFactory.getLog(MapperListener.class);
@@ -91,6 +90,12 @@ public class MapperListener extends LifecycleMBeanBase
 
     // ------------------------------------------------------- Lifecycle Methods
 
+    /**
+     * 1.engine容器不存在，则MapperListener也不需要启动
+     * 2.查找默认主机，并设置到mapper的defaultHostName属性中
+     * 3.对容器及下面的所有子容器添加事件监听器
+     * 4.注册engine下面的host、context和wrapper，registerHost会注册host及下面的子容器
+     */
     @Override
     public void startInternal() throws LifecycleException {
 

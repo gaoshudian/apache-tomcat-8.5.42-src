@@ -102,8 +102,7 @@ final class StandardHostValve extends ValveBase {
      * @exception ServletException if a servlet error occurred
      */
     @Override
-    public final void invoke(Request request, Response response)
-        throws IOException, ServletException {
+    public final void invoke(Request request, Response response) throws IOException, ServletException {
 
         // Select the Context to be used for this Request
         Context context = request.getContext();
@@ -130,6 +129,7 @@ final class StandardHostValve extends ValveBase {
             // application for processing.
             try {
                 if (!response.isErrorReportRequired()) {
+                    //调用Context 中pipeline的第一个Valve的invoke()方法
                     context.getPipeline().getFirst().invoke(request, response);
                 }
             } catch (Throwable t) {

@@ -757,7 +757,7 @@ public class StandardWrapper extends ContainerBase
 
         boolean newInstance = false;
 
-        // If not SingleThreadedModel, return the same instance every time
+        //如果Wrapper没有实现SingleThreadedModel，则每次都会返回同一个Servlet
         if (!singleThreadModel) {
             // Load and initialize our instance if necessary
             if (instance == null || !instanceInitialized) {
@@ -768,8 +768,7 @@ public class StandardWrapper extends ContainerBase
                                 log.debug("Allocating non-STM instance");
                             }
 
-                            // Note: We don't know if the Servlet implements
-                            // SingleThreadModel until we have loaded it.
+                            // 加载Servlet
                             instance = loadServlet();
                             newInstance = true;
                             if (!singleThreadModel) {
@@ -785,6 +784,7 @@ public class StandardWrapper extends ContainerBase
                             throw new ServletException(sm.getString("standardWrapper.allocate"), e);
                         }
                     }
+                    // 初始化Servlet
                     if (!instanceInitialized) {
                         initServlet(instance);
                     }
@@ -801,6 +801,7 @@ public class StandardWrapper extends ContainerBase
                     }
                 }
             } else {
+                // 非单线程模型，直接返回已经创建的Servlet，也就是说，这种情况下只会创建一个Servlet
                 if (log.isTraceEnabled()) {
                     log.trace("  Returning non-STM instance");
                 }
@@ -813,6 +814,7 @@ public class StandardWrapper extends ContainerBase
             }
         }
 
+        // 如果是单线程模式，则使用servlet对象池技术来加载多个Servlet
         synchronized (instancePool) {
             while (countAllocated.get() >= nInstances) {
                 // Allocate a new instance if possible, or else wait
@@ -1033,18 +1035,16 @@ public class StandardWrapper extends ContainerBase
             // Complain if no servlet class has been specified
             if (servletClass == null) {
                 unavailable(null);
-                throw new ServletException
-                    (sm.getString("standardWrapper.notClass", getName()));
+                throw new ServletException(sm.getString("standardWrapper.notClass", getName()));
             }
-
+            //关键的地方，就是通过实例管理器，创建Servlet实例，而实例管理器是通过特殊的类加载器来加载给定的类
             InstanceManager instanceManager = ((StandardContext)getParent()).getInstanceManager();
             try {
                 servlet = (Servlet) instanceManager.newInstance(servletClass);
             } catch (ClassCastException e) {
                 unavailable(null);
                 // Restore the context ClassLoader
-                throw new ServletException
-                    (sm.getString("standardWrapper.notServlet", servletClass), e);
+                throw new ServletException(sm.getString("standardWrapper.notServlet", servletClass), e);
             } catch (Throwable e) {
                 e = ExceptionUtils.unwrapInvocationTargetException(e);
                 ExceptionUtils.handleThrowable(e);
@@ -1057,13 +1057,11 @@ public class StandardWrapper extends ContainerBase
                 }
 
                 // Restore the context ClassLoader
-                throw new ServletException
-                    (sm.getString("standardWrapper.instantiate", servletClass), e);
+                throw new ServletException(sm.getString("standardWrapper.instantiate", servletClass), e);
             }
 
             if (multipartConfigElement == null) {
-                MultipartConfig annotation =
-                        servlet.getClass().getAnnotation(MultipartConfig.class);
+                MultipartConfig annotation = servlet.getClass().getAnnotation(MultipartConfig.class);
                 if (annotation != null) {
                     multipartConfigElement =
                             new MultipartConfigElement(annotation);
@@ -1086,6 +1084,7 @@ public class StandardWrapper extends ContainerBase
                 singleThreadModel = true;
             }
 
+            //调用Servlet的init方法
             initServlet(servlet);
 
             fireContainerEvent("load", this);
@@ -1116,8 +1115,7 @@ public class StandardWrapper extends ContainerBase
     }
 
 
-    private synchronized void initServlet(Servlet servlet)
-            throws ServletException {
+    private synchronized void initServlet(Servlet servlet) throws ServletException {
 
         if (instanceInitialized && !singleThreadModel) return;
 
@@ -1127,10 +1125,7 @@ public class StandardWrapper extends ContainerBase
                 boolean success = false;
                 try {
                     Object[] args = new Object[] { facade };
-                    SecurityUtil.doAsPrivilege("init",
-                                               servlet,
-                                               classType,
-                                               args);
+                    SecurityUtil.doAsPrivilege("init", servlet, classType, args);
                     success = true;
                 } finally {
                     if (!success) {

@@ -149,8 +149,8 @@
       <Host name="localhost"  appBase="webapps"
             unpackWARs="true" autoDeploy="true">
 
-		<Context path="/ref-comet" docBase="D:\work_tomcat\ref-comet" reloadable="true"/>
-        <Context path="/ref-come-5" docBase="D:\work_tomcat\ref-comet-5" reloadable="true"/>
+		<!--<Context path="/ref-comet" docBase="D:\work_tomcat\ref-comet" reloadable="true"/>-->
+        <!--<Context path="/ref-come-5" docBase="D:\work_tomcat\ref-comet-5" reloadable="true"/>-->
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->
         <!--

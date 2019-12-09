@@ -51,8 +51,7 @@ import org.apache.tomcat.util.ExceptionUtils;
  * @author Craig R. McClanahan
  */
 
-public class StandardPipeline extends LifecycleBase
-        implements Pipeline, Contained {
+public class StandardPipeline extends LifecycleBase implements Pipeline, Contained {
 
     private static final Log log = LogFactory.getLog(StandardPipeline.class);
 
@@ -163,11 +162,7 @@ public class StandardPipeline extends LifecycleBase
 
 
     /**
-     * Start {@link Valve}s) in this pipeline and implement the requirements
-     * of {@link LifecycleBase#startInternal()}.
-     *
-     * @exception LifecycleException if this component detects a fatal error
-     *  that prevents this component from being used
+     * 开始逻辑，调用所有阀门的start方法
      */
     @Override
     protected synchronized void startInternal() throws LifecycleException {
@@ -188,11 +183,7 @@ public class StandardPipeline extends LifecycleBase
 
 
     /**
-     * Stop {@link Valve}s) in this pipeline and implement the requirements
-     * of {@link LifecycleBase#stopInternal()}.
-     *
-     * @exception LifecycleException if this component detects a fatal error
-     *  that prevents this component from being used
+     * 停止逻辑，调用所有阀门的stop方法
      */
     @Override
     protected synchronized void stopInternal() throws LifecycleException {
@@ -212,6 +203,9 @@ public class StandardPipeline extends LifecycleBase
     }
 
 
+    /**
+     * 销毁逻辑，移掉所有阀门，调用removeValve方法
+     */
     @Override
     protected void destroyInternal() {
         Valve[] valves = getValves();
@@ -237,28 +231,16 @@ public class StandardPipeline extends LifecycleBase
 
 
     /**
-     * <p>Return the Valve instance that has been distinguished as the basic
-     * Valve for this Pipeline (if any).
+     * 获取基础阀门
      */
     @Override
     public Valve getBasic() {
-
         return (this.basic);
-
     }
 
 
     /**
-     * <p>Set the Valve instance that has been distinguished as the basic
-     * Valve for this Pipeline (if any).  Prior to setting the basic Valve,
-     * the Valve's <code>setContainer()</code> will be called, if it
-     * implements <code>Contained</code>, with the owning Container as an
-     * argument.  The method may throw an <code>IllegalArgumentException</code>
-     * if this Valve chooses not to be associated with this Container, or
-     * <code>IllegalStateException</code> if it is already associated with
-     * a different Container.</p>
-     *
-     * @param valve Valve to be distinguished as the basic Valve
+     * 设置基础阀门
      */
     @Override
     public void setBasic(Valve valve) {
@@ -328,12 +310,11 @@ public class StandardPipeline extends LifecycleBase
      *
      * @param valve Valve to be added
      *
-     * @exception IllegalArgumentException if this Container refused to
-     *  accept the specified Valve
-     * @exception IllegalArgumentException if the specified Valve refuses to be
-     *  associated with this Container
-     * @exception IllegalStateException if the specified Valve is already
-     *  associated with a different Container
+     * @exception IllegalArgumentException if this Container refused to accept the specified Valve
+     * @exception IllegalArgumentException if the specified Valve refuses to be associated with this Container
+     * @exception IllegalStateException if the specified Valve is already associated with a different Container
+     *
+     *  添加阀门
      */
     @Override
     public void addValve(Valve valve) {
@@ -353,7 +334,7 @@ public class StandardPipeline extends LifecycleBase
             }
         }
 
-        // Add this Valve to the set associated with this Pipeline
+        // 设置阀门，将阀门添加到基础阀门的前一个
         if (first == null) {
             first = valve;
             valve.setNext(basic);
@@ -374,9 +355,7 @@ public class StandardPipeline extends LifecycleBase
 
 
     /**
-     * Return the set of Valves in the pipeline associated with this
-     * Container, including the basic Valve (if any).  If there are no
-     * such Valves, a zero-length array is returned.
+     * 获取阀门数组
      */
     @Override
     public Valve[] getValves() {
@@ -414,6 +393,7 @@ public class StandardPipeline extends LifecycleBase
     }
 
     /**
+     * 移除阀门
      * Remove the specified Valve from the pipeline associated with this
      * Container, if it is found; otherwise, do nothing.  If the Valve is
      * found and removed, the Valve's <code>setContainer(null)</code> method

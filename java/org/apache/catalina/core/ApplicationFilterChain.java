@@ -163,13 +163,12 @@ public final class ApplicationFilterChain implements FilterChain {
                     throw new ServletException(e.getMessage(), e);
             }
         } else {
+            //最终会调用servlet.service()方法
             internalDoFilter(request,response);
         }
     }
 
-    private void internalDoFilter(ServletRequest request,
-                                  ServletResponse response)
-        throws IOException, ServletException {
+    private void internalDoFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
 
         // Call the next filter if there is one
         if (pos < n) {
@@ -177,15 +176,13 @@ public final class ApplicationFilterChain implements FilterChain {
             try {
                 Filter filter = filterConfig.getFilter();
 
-                if (request.isAsyncSupported() && "false".equalsIgnoreCase(
-                        filterConfig.getFilterDef().getAsyncSupported())) {
+                if (request.isAsyncSupported() && "false".equalsIgnoreCase(filterConfig.getFilterDef().getAsyncSupported())) {
                     request.setAttribute(Globals.ASYNC_SUPPORTED_ATTR, Boolean.FALSE);
                 }
                 if( Globals.IS_SECURITY_ENABLED ) {
                     final ServletRequest req = request;
                     final ServletResponse res = response;
-                    Principal principal =
-                        ((HttpServletRequest) req).getUserPrincipal();
+                    Principal principal = ((HttpServletRequest) req).getUserPrincipal();
 
                     Object[] args = new Object[]{req, res, this};
                     SecurityUtil.doAsPrivilege ("doFilter", filter, classType, args, principal);

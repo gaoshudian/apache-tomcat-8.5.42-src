@@ -54,8 +54,7 @@ public class ConnectorCreateRule extends Rule {
      * @param attributes The attribute list for this element
      */
     @Override
-    public void begin(String namespace, String name, Attributes attributes)
-            throws Exception {
+    public void begin(String namespace, String name, Attributes attributes) throws Exception {
         Service svc = (Service)digester.peek();
         Executor ex = null;
         if ( attributes.getValue("executor")!=null ) {

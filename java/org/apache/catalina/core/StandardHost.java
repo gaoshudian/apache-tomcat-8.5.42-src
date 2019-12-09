@@ -64,10 +64,8 @@ public class StandardHost extends ContainerBase implements Host {
      * Create a new StandardHost component with the default basic Valve.
      */
     public StandardHost() {
-
         super();
         pipeline.setBasic(new StandardHostValve());
-
     }
 
 

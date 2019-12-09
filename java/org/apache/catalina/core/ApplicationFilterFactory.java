@@ -81,6 +81,7 @@ public final class ApplicationFilterFactory {
 
         // Acquire the filter mappings for this Context
         StandardContext context = (StandardContext) wrapper.getParent();
+        // 从这儿看出过滤器链对象里面的元素是根据Context里面的filterMaps来生成的
         FilterMap filterMaps[] = context.findFilterMaps();
 
         // If there are no filter mappings, we are done
@@ -100,6 +101,7 @@ public final class ApplicationFilterFactory {
         String servletName = wrapper.getName();
 
         // Add the relevant path-mapped filters to this filter chain
+        // 类型和路径都匹配的情况下，将context.filterConfig放到过滤器链里面
         for (int i = 0; i < filterMaps.length; i++) {
             if (!matchDispatcher(filterMaps[i] ,dispatcher)) {
                 continue;

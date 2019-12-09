@@ -144,8 +144,7 @@ import org.apache.tomcat.util.security.PrivilegedSetTccl;
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  */
-public class StandardContext extends ContainerBase
-        implements Context, NotificationEmitter {
+public class StandardContext extends ContainerBase implements Context, NotificationEmitter {
 
     private static final Log log = LogFactory.getLog(StandardContext.class);
 
@@ -5038,8 +5037,7 @@ public class StandardContext extends ContainerBase
         // Validate required extensions
         boolean dependencyCheck = true;
         try {
-            dependencyCheck = ExtensionValidator.validateApplication
-                (getResources(), this);
+            dependencyCheck = ExtensionValidator.validateApplication(getResources(), this);
         } catch (IOException ioe) {
             log.error(sm.getString("standardContext.extensionValidationError"), ioe);
             dependencyCheck = false;
@@ -5085,18 +5083,12 @@ public class StandardContext extends ContainerBase
 
                 // since the loader just started, the webapp classloader is now
                 // created.
-                setClassLoaderProperty("clearReferencesRmiTargets",
-                        getClearReferencesRmiTargets());
-                setClassLoaderProperty("clearReferencesStopThreads",
-                        getClearReferencesStopThreads());
-                setClassLoaderProperty("clearReferencesStopTimerThreads",
-                        getClearReferencesStopTimerThreads());
-                setClassLoaderProperty("clearReferencesHttpClientKeepAliveThread",
-                        getClearReferencesHttpClientKeepAliveThread());
-                setClassLoaderProperty("clearReferencesObjectStreamClassCaches",
-                        getClearReferencesObjectStreamClassCaches());
-                setClassLoaderProperty("clearReferencesThreadLocals",
-                        getClearReferencesThreadLocals());
+                setClassLoaderProperty("clearReferencesRmiTargets", getClearReferencesRmiTargets());
+                setClassLoaderProperty("clearReferencesStopThreads", getClearReferencesStopThreads());
+                setClassLoaderProperty("clearReferencesStopTimerThreads", getClearReferencesStopTimerThreads());
+                setClassLoaderProperty("clearReferencesHttpClientKeepAliveThread", getClearReferencesHttpClientKeepAliveThread());
+                setClassLoaderProperty("clearReferencesObjectStreamClassCaches", getClearReferencesObjectStreamClassCaches());
+                setClassLoaderProperty("clearReferencesThreadLocals", getClearReferencesThreadLocals());
 
                 // By calling unbindThread and bindThread in a row, we setup the
                 // current Thread CCL to be the webapp classloader

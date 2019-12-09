@@ -59,7 +59,7 @@ public class StandardEngine extends ContainerBase implements Engine {
 
 
     /**
-     * Create a new StandardEngine component with the default basic Valve.
+     * 使用默认的基础阀门创建标准Engine组件
      */
     public StandardEngine() {
 
@@ -204,19 +204,13 @@ public class StandardEngine extends ContainerBase implements Engine {
 
 
     /**
-     * Add a child Container, only if the proposed child is an implementation
-     * of Host.
-     *
-     * @param child Child container to be added
+     * 将Host作为其子容器添加到子容器列表中
      */
     @Override
     public void addChild(Container child) {
-
         if (!(child instanceof Host))
-            throw new IllegalArgumentException
-                (sm.getString("standardEngine.notHost"));
+            throw new IllegalArgumentException(sm.getString("standardEngine.notHost"));
         super.addChild(child);
-
     }
 
 
@@ -228,10 +222,7 @@ public class StandardEngine extends ContainerBase implements Engine {
      */
     @Override
     public void setParent(Container container) {
-
-        throw new IllegalArgumentException
-            (sm.getString("standardEngine.notParent"));
-
+        throw new IllegalArgumentException(sm.getString("standardEngine.notParent"));
     }
 
 

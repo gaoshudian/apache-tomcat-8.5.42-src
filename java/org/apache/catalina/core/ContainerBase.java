@@ -126,8 +126,7 @@ import org.apache.tomcat.util.res.StringManager;
  *
  * @author Craig R. McClanahan
  */
-public abstract class ContainerBase extends LifecycleMBeanBase
-        implements Container {
+public abstract class ContainerBase extends LifecycleMBeanBase implements Container {
 
     private static final Log log = LogFactory.getLog(ContainerBase.class);
 
@@ -723,8 +722,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
     @Override
     public void addChild(Container child) {
         if (Globals.IS_SECURITY_ENABLED) {
-            PrivilegedAction<Void> dp =
-                new PrivilegedAddChild(child);
+            PrivilegedAction<Void> dp = new PrivilegedAddChild(child);
             AccessController.doPrivileged(dp);
         } else {
             addChildInternal(child);
@@ -748,9 +746,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         // Don't do this inside sync block - start can be a slow process and
         // locking the children object can cause problems elsewhere
         try {
-            if ((getState().isAvailable() ||
-                    LifecycleState.STARTING_PREP.equals(getState())) &&
-                    startChildren) {
+            if ((getState().isAvailable() || LifecycleState.STARTING_PREP.equals(getState())) && startChildren) {
                 child.start();
             }
         } catch (LifecycleException e) {
@@ -950,8 +946,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
         }
         if (multiThrowable != null) {
-            throw new LifecycleException(sm.getString("containerBase.threadedStartFailed"),
-                    multiThrowable.getThrowable());
+            throw new LifecycleException(sm.getString("containerBase.threadedStartFailed"), multiThrowable.getThrowable());
         }
 
         // Start the Valves in our pipeline (including the basic), if any

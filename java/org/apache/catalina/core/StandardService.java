@@ -402,12 +402,8 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
 
     /**
-     * Start nested components ({@link Executor}s, {@link Connector}s and
-     * {@link Container}s) and implement the requirements of
-     * {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
-     *
-     * @exception LifecycleException if this component detects a fatal error
-     *  that prevents this component from being used
+     * start方法:
+     * 分别调用了Engine、Executors、MapperListener和Connectors的start()方法
      */
     @Override
     protected void startInternal() throws LifecycleException {
@@ -522,8 +518,11 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
 
     /**
-     * Invoke a pre-startup initialization. This is used to allow connectors
-     * to bind to restricted ports under Unix operating environments.
+     * 初始化方法
+     * 1.Engine的初始化操作
+     * 2.Service线程执行器（tomcat中对java.util.concurrent.Executor的实现）的初始化操作
+     * 3.MapperListener的初始化操作
+     * 4.对Connectors（可能有多个）的初始化操作
      */
     @Override
     protected void initInternal() throws LifecycleException {

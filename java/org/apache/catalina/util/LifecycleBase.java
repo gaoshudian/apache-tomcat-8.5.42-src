@@ -98,7 +98,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
     @Override
     public final synchronized void init() throws LifecycleException {
-        //这个就是为了防止 组件启动的顺序不对
+        //这个就是为了防止 组件启动的顺序不对，非NEW状态，不允许调用init()方法
         if (!state.equals(LifecycleState.NEW)) {
             invalidTransition(Lifecycle.BEFORE_INIT_EVENT);
         }
@@ -109,8 +109,11 @@ public abstract class LifecycleBase implements Lifecycle {
             if(this.getClass().getName().startsWith("org.apache.catalina.core")||this.getClass().getName().startsWith("org.apache.catalina.connector")){
                 System.out.println(this.getClass()+"--init()");
             }
+            // 初始化逻辑之前，先将状态变更为`INITIALIZING`
             setStateInternal(LifecycleState.INITIALIZING, null, false);
+            //初始化
             initInternal();
+            // 初始化完成之后，状态变更为`INITIALIZED`
             setStateInternal(LifecycleState.INITIALIZED, null, false);
         } catch (Throwable t) {
             ExceptionUtils.handleThrowable(t);
@@ -129,8 +132,7 @@ public abstract class LifecycleBase implements Lifecycle {
     @Override
     public final synchronized void start() throws LifecycleException {
 
-        if (LifecycleState.STARTING_PREP.equals(state) || LifecycleState.STARTING.equals(state) ||
-                LifecycleState.STARTED.equals(state)) {
+        if (LifecycleState.STARTING_PREP.equals(state) || LifecycleState.STARTING.equals(state) || LifecycleState.STARTED.equals(state)) {
 
             if (log.isDebugEnabled()) {
                 Exception e = new LifecycleException();
@@ -146,8 +148,7 @@ public abstract class LifecycleBase implements Lifecycle {
             init();
         } else if (state.equals(LifecycleState.FAILED)) {
             stop();
-        } else if (!state.equals(LifecycleState.INITIALIZED) &&
-                !state.equals(LifecycleState.STOPPED)) {
+        } else if (!state.equals(LifecycleState.INITIALIZED) && !state.equals(LifecycleState.STOPPED)) {
             invalidTransition(Lifecycle.BEFORE_START_EVENT);
         }
 
@@ -365,6 +366,7 @@ public abstract class LifecycleBase implements Lifecycle {
         setStateInternal(state, data, true);
     }
 
+    //维护状态，同时在状态转换成功之后触发事件
     private synchronized void setStateInternal(LifecycleState state,
             Object data, boolean check) throws LifecycleException {
 
@@ -407,8 +409,7 @@ public abstract class LifecycleBase implements Lifecycle {
     }
 
     private void invalidTransition(String type) throws LifecycleException {
-        String msg = sm.getString("lifecycleBase.invalidTransition", type,
-                toString(), state);
+        String msg = sm.getString("lifecycleBase.invalidTransition", type, toString(), state);
         throw new LifecycleException(msg);
     }
 }
