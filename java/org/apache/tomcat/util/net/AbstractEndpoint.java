@@ -1063,18 +1063,19 @@ public abstract class AbstractEndpoint<S> {
      *
      * @return if processing was triggered successfully
      */
-    public boolean processSocket(SocketWrapperBase<S> socketWrapper,
-            SocketEvent event, boolean dispatch) {
+    public boolean processSocket(SocketWrapperBase<S> socketWrapper, SocketEvent event, boolean dispatch) {
         try {
             if (socketWrapper == null) {
                 return false;
             }
+            // 1. 从`processorCache`里面拿一个`Processor`来处理socket，`Processor`的实现为`SocketProcessor`
             SocketProcessorBase<S> sc = processorCache.pop();
             if (sc == null) {
                 sc = createSocketProcessor(socketWrapper, event);
             } else {
                 sc.reset(socketWrapper, event);
             }
+            // 2. 将`Processor`放到工作线程池中执行
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
                 executor.execute(sc);
@@ -1195,6 +1196,7 @@ public abstract class AbstractEndpoint<S> {
         startInternal();
     }
 
+    //开启acceptor线程
     protected final void startAcceptorThreads() {
         int count = getAcceptorThreadCount();
         acceptors = new Acceptor[count];

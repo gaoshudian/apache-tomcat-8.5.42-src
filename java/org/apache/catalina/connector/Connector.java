@@ -1005,8 +1005,7 @@ public class Connector extends LifecycleMBeanBase  {
 
         // Validate settings before starting
         if (getPort() < 0) {
-            throw new LifecycleException(sm.getString(
-                    "coyoteConnector.invalidPort", Integer.valueOf(getPort())));
+            throw new LifecycleException(sm.getString("coyoteConnector.invalidPort", Integer.valueOf(getPort())));
         }
 
         setState(LifecycleState.STARTING);
@@ -1014,8 +1013,7 @@ public class Connector extends LifecycleMBeanBase  {
         try {
             protocolHandler.start();
         } catch (Exception e) {
-            throw new LifecycleException(
-                    sm.getString("coyoteConnector.protocolHandlerStartFailed"), e);
+            throw new LifecycleException(sm.getString("coyoteConnector.protocolHandlerStartFailed"), e);
         }
     }
 

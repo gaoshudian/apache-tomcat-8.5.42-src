@@ -37,9 +37,11 @@ public abstract class AbstractProcessorLight implements Processor {
     private Set<DispatchType> dispatches = new CopyOnWriteArraySet<>();
 
 
+    /**
+     * 关键代码:state = service(socketWrapper);
+     */
     @Override
-    public SocketState process(SocketWrapperBase<?> socketWrapper, SocketEvent status)
-            throws IOException {
+    public SocketState process(SocketWrapperBase<?> socketWrapper, SocketEvent status) throws IOException {
 
         SocketState state = SocketState.CLOSED;
         Iterator<DispatchType> dispatches = null;
@@ -63,6 +65,7 @@ public abstract class AbstractProcessorLight implements Processor {
                 // Extra write event likely after async, ignore
                 state = SocketState.LONG;
             } else if (status == SocketEvent.OPEN_READ){
+                // 调用`service()`方法
                 state = service(socketWrapper);
             } else {
                 // Default to closing the socket if the SocketEvent passed in
@@ -71,16 +74,13 @@ public abstract class AbstractProcessorLight implements Processor {
             }
 
             if (getLog().isDebugEnabled()) {
-                getLog().debug("Socket: [" + socketWrapper +
-                        "], Status in: [" + status +
-                        "], State out: [" + state + "]");
+                getLog().debug("Socket: [" + socketWrapper + "], Status in: [" + status + "], State out: [" + state + "]");
             }
 
             if (state != SocketState.CLOSED && isAsync()) {
                 state = asyncPostProcess();
                 if (getLog().isDebugEnabled()) {
-                    getLog().debug("Socket: [" + socketWrapper +
-                            "], State after async post processing: [" + state + "]");
+                    getLog().debug("Socket: [" + socketWrapper + "], State after async post processing: [" + state + "]");
                 }
             }
 

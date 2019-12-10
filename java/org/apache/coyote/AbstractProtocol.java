@@ -708,35 +708,32 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         }
 
 
+        /**
+         * 核心代码就一行:state = processor.process(wrapper, status);
+         */
         @Override
         public SocketState process(SocketWrapperBase<S> wrapper, SocketEvent status) {
             if (getLog().isDebugEnabled()) {
-                getLog().debug(sm.getString("abstractConnectionHandler.process",
-                        wrapper.getSocket(), status));
+                getLog().debug(sm.getString("abstractConnectionHandler.process", wrapper.getSocket(), status));
             }
             if (wrapper == null) {
                 // Nothing to do. Socket has been closed.
                 return SocketState.CLOSED;
             }
-
             S socket = wrapper.getSocket();
-
             Processor processor = connections.get(socket);
             if (getLog().isDebugEnabled()) {
-                getLog().debug(sm.getString("abstractConnectionHandler.connectionsGet",
-                        processor, socket));
+                getLog().debug(sm.getString("abstractConnectionHandler.connectionsGet", processor, socket));
             }
 
             // Async timeouts are calculated on a dedicated thread and then
             // dispatched. Because of delays in the dispatch process, the
             // timeout may no longer be required. Check here and avoid
             // unnecessary processing.
-            if (SocketEvent.TIMEOUT == status && (processor == null ||
-                    !processor.isAsync() || !processor.checkAsyncTimeoutGeneration())) {
+            if (SocketEvent.TIMEOUT == status && (processor == null || !processor.isAsync() || !processor.checkAsyncTimeoutGeneration())) {
                 // This is effectively a NO-OP
                 return SocketState.OPEN;
             }
-
             if (processor != null) {
                 // Make sure an async timeout doesn't fire
                 getProtocol().removeWaitingProcessor(processor);
@@ -745,20 +742,16 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                 // longer a processor associated with this socket.
                 return SocketState.CLOSED;
             }
-
             ContainerThreadMarker.set();
-
             try {
                 if (processor == null) {
                     String negotiatedProtocol = wrapper.getNegotiatedProtocol();
                     // OpenSSL typically returns null whereas JSSE typically
                     // returns "" when no protocol is negotiated
                     if (negotiatedProtocol != null && negotiatedProtocol.length() > 0) {
-                        UpgradeProtocol upgradeProtocol =
-                                getProtocol().getNegotiatedProtocol(negotiatedProtocol);
+                        UpgradeProtocol upgradeProtocol = getProtocol().getNegotiatedProtocol(negotiatedProtocol);
                         if (upgradeProtocol != null) {
-                            processor = upgradeProtocol.getProcessor(
-                                    wrapper, getProtocol().getAdapter());
+                            processor = upgradeProtocol.getProcessor(wrapper, getProtocol().getAdapter());
                         } else if (negotiatedProtocol.equals("http/1.1")) {
                             // Explicitly negotiated the default protocol.
                             // Obtain a processor below.
@@ -771,18 +764,13 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                             // replace the code below with the commented out
                             // block.
                             if (getLog().isDebugEnabled()) {
-                                getLog().debug(sm.getString(
-                                    "abstractConnectionHandler.negotiatedProcessor.fail",
-                                    negotiatedProtocol));
+                                getLog().debug(sm.getString("abstractConnectionHandler.negotiatedProcessor.fail", negotiatedProtocol));
                             }
                             return SocketState.CLOSED;
                             /*
-                             * To replace the code above once OpenSSL 1.1.0 is
-                             * used.
+                             * To replace the code above once OpenSSL 1.1.0 is used.
                             // Failed to create processor. This is a bug.
-                            throw new IllegalStateException(sm.getString(
-                                    "abstractConnectionHandler.negotiatedProcessor.fail",
-                                    negotiatedProtocol));
+                            throw new IllegalStateException(sm.getString("abstractConnectionHandler.negotiatedProcessor.fail",negotiatedProtocol));
                             */
                         }
                     }
@@ -790,25 +778,21 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                 if (processor == null) {
                     processor = recycledProcessors.pop();
                     if (getLog().isDebugEnabled()) {
-                        getLog().debug(sm.getString("abstractConnectionHandler.processorPop",
-                                processor));
+                        getLog().debug(sm.getString("abstractConnectionHandler.processorPop", processor));
                     }
                 }
                 if (processor == null) {
                     processor = getProtocol().createProcessor();
                     register(processor);
                 }
-
-                processor.setSslSupport(
-                        wrapper.getSslSupport(getProtocol().getClientCertProvider()));
-
+                processor.setSslSupport(wrapper.getSslSupport(getProtocol().getClientCertProvider()));
                 // Associate the processor with the connection
                 connections.put(socket, processor);
 
                 SocketState state = SocketState.CLOSED;
                 do {
+                    // 关键的代码，终于找到你了
                     state = processor.process(wrapper, status);
-
                     if (state == SocketState.UPGRADING) {
                         // Get the HTTP upgrade handler
                         UpgradeToken upgradeToken = processor.getUpgradeToken();
@@ -818,16 +802,13 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                             // Assume direct HTTP/2 connection
                             UpgradeProtocol upgradeProtocol = getProtocol().getUpgradeProtocol("h2c");
                             if (upgradeProtocol != null) {
-                                processor = upgradeProtocol.getProcessor(
-                                        wrapper, getProtocol().getAdapter());
+                                processor = upgradeProtocol.getProcessor(wrapper, getProtocol().getAdapter());
                                 wrapper.unRead(leftOverInput);
                                 // Associate with the processor with the connection
                                 connections.put(socket, processor);
                             } else {
                                 if (getLog().isDebugEnabled()) {
-                                    getLog().debug(sm.getString(
-                                        "abstractConnectionHandler.negotiatedProcessor.fail",
-                                        "h2c"));
+                                    getLog().debug(sm.getString("abstractConnectionHandler.negotiatedProcessor.fail", "h2c"));
                                 }
                                 return SocketState.CLOSED;
                             }
@@ -838,8 +819,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                             // Create the upgrade processor
                             processor = getProtocol().createUpgradeProcessor(wrapper, upgradeToken);
                             if (getLog().isDebugEnabled()) {
-                                getLog().debug(sm.getString("abstractConnectionHandler.upgradeCreate",
-                                        processor, wrapper));
+                                getLog().debug(sm.getString("abstractConnectionHandler.upgradeCreate", processor, wrapper));
                             }
                             wrapper.unRead(leftOverInput);
                             // Mark the connection as upgraded
@@ -929,17 +909,14 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                 return state;
             } catch(java.net.SocketException e) {
                 // SocketExceptions are normal
-                getLog().debug(sm.getString(
-                        "abstractConnectionHandler.socketexception.debug"), e);
+                getLog().debug(sm.getString("abstractConnectionHandler.socketexception.debug"), e);
             } catch (java.io.IOException e) {
                 // IOExceptions are normal
-                getLog().debug(sm.getString(
-                        "abstractConnectionHandler.ioexception.debug"), e);
+                getLog().debug(sm.getString("abstractConnectionHandler.ioexception.debug"), e);
             } catch (ProtocolException e) {
                 // Protocol exceptions normally mean the client sent invalid or
                 // incomplete data.
-                getLog().debug(sm.getString(
-                        "abstractConnectionHandler.protocolexception.debug"), e);
+                getLog().debug(sm.getString("abstractConnectionHandler.protocolexception.debug"), e);
             }
             // Future developers: if you discover any other
             // rare-but-nonfatal exceptions, catch them here, and log as
