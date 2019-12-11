@@ -134,8 +134,7 @@ public final class ApplicationFilterChain implements FilterChain {
      * @exception ServletException if a servlet exception occurs
      */
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response)
-        throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
 
         if( Globals.IS_SECURITY_ENABLED ) {
             final ServletRequest req = request;
@@ -153,14 +152,10 @@ public final class ApplicationFilterChain implements FilterChain {
                 );
             } catch( PrivilegedActionException pe) {
                 Exception e = pe.getException();
-                if (e instanceof ServletException)
-                    throw (ServletException) e;
-                else if (e instanceof IOException)
-                    throw (IOException) e;
-                else if (e instanceof RuntimeException)
-                    throw (RuntimeException) e;
-                else
-                    throw new ServletException(e.getMessage(), e);
+                if (e instanceof ServletException) throw (ServletException) e;
+                else if (e instanceof IOException) throw (IOException) e;
+                else if (e instanceof RuntimeException) throw (RuntimeException) e;
+                else throw new ServletException(e.getMessage(), e);
             }
         } else {
             //最终会调用servlet.service()方法
@@ -207,23 +202,15 @@ public final class ApplicationFilterChain implements FilterChain {
             }
 
             if (request.isAsyncSupported() && !servletSupportsAsync) {
-                request.setAttribute(Globals.ASYNC_SUPPORTED_ATTR,
-                        Boolean.FALSE);
+                request.setAttribute(Globals.ASYNC_SUPPORTED_ATTR, Boolean.FALSE);
             }
             // Use potentially wrapped request from this point
-            if ((request instanceof HttpServletRequest) &&
-                    (response instanceof HttpServletResponse) &&
-                    Globals.IS_SECURITY_ENABLED ) {
+            if ((request instanceof HttpServletRequest) && (response instanceof HttpServletResponse) && Globals.IS_SECURITY_ENABLED ) {
                 final ServletRequest req = request;
                 final ServletResponse res = response;
-                Principal principal =
-                    ((HttpServletRequest) req).getUserPrincipal();
+                Principal principal = ((HttpServletRequest) req).getUserPrincipal();
                 Object[] args = new Object[]{req, res};
-                SecurityUtil.doAsPrivilege("service",
-                                           servlet,
-                                           classTypeUsedInService,
-                                           args,
-                                           principal);
+                SecurityUtil.doAsPrivilege("service", servlet, classTypeUsedInService, args, principal);
             } else {
                 servlet.service(request, response);
             }

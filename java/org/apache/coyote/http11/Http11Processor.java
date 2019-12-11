@@ -738,8 +738,7 @@ public class Http11Processor extends AbstractProcessor {
             Enumeration<String> connectionValues = request.getMimeHeaders().values("Connection");
             boolean foundUpgrade = false;
             while (connectionValues.hasMoreElements() && !foundUpgrade) {
-                foundUpgrade = connectionValues.nextElement().toLowerCase(
-                        Locale.ENGLISH).contains("upgrade");
+                foundUpgrade = connectionValues.nextElement().toLowerCase(Locale.ENGLISH).contains("upgrade");
             }
 
             if (foundUpgrade) {
@@ -785,8 +784,7 @@ public class Http11Processor extends AbstractProcessor {
 
             if (maxKeepAliveRequests == 1) {
                 keepAlive = false;
-            } else if (maxKeepAliveRequests > 0 &&
-                    socketWrapper.decrementKeepAlive() <= 0) {
+            } else if (maxKeepAliveRequests > 0 && socketWrapper.decrementKeepAlive() <= 0) {
                 keepAlive = false;
             }
 
@@ -800,8 +798,7 @@ public class Http11Processor extends AbstractProcessor {
                     // set the status to 500 and set the errorException.
                     // If we fail here, then the response is likely already
                     // committed, so we can't try and set headers.
-                    if(keepAlive && !getErrorState().isError() && !isAsync() &&
-                            statusDropsConnection(response.getStatus())) {
+                    if(keepAlive && !getErrorState().isError() && !isAsync() && statusDropsConnection(response.getStatus())) {
                         setErrorState(ErrorState.CLOSE_CLEAN, null);
                     }
                 } catch (InterruptedIOException e) {
@@ -975,8 +972,7 @@ public class Http11Processor extends AbstractProcessor {
             response.setStatus(505);
             setErrorState(ErrorState.CLOSE_CLEAN, null);
             if (log.isDebugEnabled()) {
-                log.debug(sm.getString("http11processor.request.prepare")+
-                          " Unsupported HTTP version \""+protocolMB+"\"");
+                log.debug(sm.getString("http11processor.request.prepare")+ " Unsupported HTTP version \""+protocolMB+"\"");
             }
         }
 
@@ -988,8 +984,7 @@ public class Http11Processor extends AbstractProcessor {
             ByteChunk connectionValueBC = connectionValueMB.getByteChunk();
             if (findBytes(connectionValueBC, Constants.CLOSE_BYTES) != -1) {
                 keepAlive = false;
-            } else if (findBytes(connectionValueBC,
-                                 Constants.KEEPALIVE_BYTES) != -1) {
+            } else if (findBytes(connectionValueBC, Constants.KEEPALIVE_BYTES) != -1) {
                 keepAlive = true;
             }
         }
@@ -1014,8 +1009,7 @@ public class Http11Processor extends AbstractProcessor {
             // and keepAlive flags accordingly
             if(userAgentValueMB != null) {
                 String userAgentValue = userAgentValueMB.toString();
-                if (restrictedUserAgents != null &&
-                        restrictedUserAgents.matcher(userAgentValue).matches()) {
+                if (restrictedUserAgents != null && restrictedUserAgents.matcher(userAgentValue).matches()) {
                     http11 = false;
                     keepAlive = false;
                 }

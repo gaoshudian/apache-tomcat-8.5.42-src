@@ -102,8 +102,7 @@ public class StandardEngine extends ContainerBase implements Engine {
      * Default access log to use for request/response pairs where we can't ID
      * the intended host and context.
      */
-    private final AtomicReference<AccessLog> defaultAccessLog =
-        new AtomicReference<>();
+    private final AtomicReference<AccessLog> defaultAccessLog = new AtomicReference<>();
 
     // ------------------------------------------------------------- Properties
 
@@ -261,16 +260,13 @@ public class StandardEngine extends ContainerBase implements Engine {
      * access log.
      */
     @Override
-    public void logAccess(Request request, Response response, long time,
-            boolean useDefault) {
+    public void logAccess(Request request, Response response, long time, boolean useDefault) {
 
         boolean logged = false;
-
         if (getAccessLog() != null) {
             accessLog.log(request, response, time);
             logged = true;
         }
-
         if (!logged && useDefault) {
             AccessLog newDefaultAccessLog = defaultAccessLog.get();
             if (newDefaultAccessLog == null) {
@@ -280,43 +276,33 @@ public class StandardEngine extends ContainerBase implements Engine {
                 Context context = null;
                 if (host != null && host.getState().isAvailable()) {
                     newDefaultAccessLog = host.getAccessLog();
-
                     if (newDefaultAccessLog != null) {
-                        if (defaultAccessLog.compareAndSet(null,
-                                newDefaultAccessLog)) {
-                            AccessLogListener l = new AccessLogListener(this,
-                                    host, null);
+                        if (defaultAccessLog.compareAndSet(null, newDefaultAccessLog)) {
+                            AccessLogListener l = new AccessLogListener(this, host, null);
                             l.install();
                         }
                     } else {
                         // Try the ROOT context of default host
                         context = (Context) host.findChild("");
-                        if (context != null &&
-                                context.getState().isAvailable()) {
+                        if (context != null && context.getState().isAvailable()) {
                             newDefaultAccessLog = context.getAccessLog();
                             if (newDefaultAccessLog != null) {
-                                if (defaultAccessLog.compareAndSet(null,
-                                        newDefaultAccessLog)) {
-                                    AccessLogListener l = new AccessLogListener(
-                                            this, null, context);
+                                if (defaultAccessLog.compareAndSet(null, newDefaultAccessLog)) {
+                                    AccessLogListener l = new AccessLogListener(this, null, context);
                                     l.install();
                                 }
                             }
                         }
                     }
                 }
-
                 if (newDefaultAccessLog == null) {
                     newDefaultAccessLog = new NoopAccessLog();
-                    if (defaultAccessLog.compareAndSet(null,
-                            newDefaultAccessLog)) {
-                        AccessLogListener l = new AccessLogListener(this, host,
-                                context);
+                    if (defaultAccessLog.compareAndSet(null, newDefaultAccessLog)) {
+                        AccessLogListener l = new AccessLogListener(this, host, context);
                         l.install();
                     }
                 }
             }
-
             newDefaultAccessLog.log(request, response, time);
         }
     }
@@ -404,17 +390,14 @@ public class StandardEngine extends ContainerBase implements Engine {
         }
     }
 
-    protected static final class AccessLogListener
-            implements PropertyChangeListener, LifecycleListener,
-            ContainerListener {
+    protected static final class AccessLogListener implements PropertyChangeListener, LifecycleListener, ContainerListener {
 
         private final StandardEngine engine;
         private final Host host;
         private final Context context;
         private volatile boolean disabled = false;
 
-        public AccessLogListener(StandardEngine engine, Host host,
-                Context context) {
+        public AccessLogListener(StandardEngine engine, Host host, Context context) {
             this.engine = engine;
             this.host = host;
             this.context = context;

@@ -647,8 +647,7 @@ public abstract class AbstractAccessLogValve extends ValveBase implements Access
      * @exception ServletException if a servlet error has occurred
      */
     @Override
-    public void invoke(Request request, Response response) throws IOException,
-            ServletException {
+    public void invoke(Request request, Response response) throws IOException, ServletException {
         if (tlsAttributeRequired) {
             // The log pattern uses TLS attributes. Ensure these are populated
             // before the request is processed because with NIO2 it is possible

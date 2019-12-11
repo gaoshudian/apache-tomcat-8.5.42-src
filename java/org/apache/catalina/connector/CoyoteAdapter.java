@@ -297,8 +297,7 @@ public class CoyoteAdapter implements Adapter {
 
 
     @Override
-    public void service(org.apache.coyote.Request req, org.apache.coyote.Response res)
-            throws Exception {
+    public void service(org.apache.coyote.Request req, org.apache.coyote.Response res) throws Exception {
 
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
@@ -337,11 +336,9 @@ public class CoyoteAdapter implements Adapter {
             postParseSuccess = postParseRequest(req, request, res, response);
             if (postParseSuccess) {
                 //检查是否我们支持异步机制
-                request.setAsyncSupported(
-                        connector.getService().getContainer().getPipeline().isAsyncSupported());
+                request.setAsyncSupported(connector.getService().getContainer().getPipeline().isAsyncSupported());
                 // 调用容器---责任链模式（pipeline）的开始
-                connector.getService().getContainer().getPipeline().getFirst().invoke(
-                        request, response);
+                connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
             }
             if (request.isAsync()) {
                 async = true;
@@ -360,8 +357,7 @@ public class CoyoteAdapter implements Adapter {
                     }
                 }
 
-                Throwable throwable =
-                        (Throwable) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
+                Throwable throwable = (Throwable) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
 
                 // If an async request was started, is not going to end once
                 // this container thread finishes and an error occurred, trigger
@@ -409,8 +405,7 @@ public class CoyoteAdapter implements Adapter {
                     if (host != null) {
                         host.logAccess(request, response, time, false);
                     } else {
-                        connector.getService().getContainer().logAccess(
-                                request, response, time, false);
+                        connector.getService().getContainer().logAccess(request, response, time, false);
                     }
                 }
             }

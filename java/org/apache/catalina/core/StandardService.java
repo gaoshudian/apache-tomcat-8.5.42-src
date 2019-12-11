@@ -528,11 +528,9 @@ public class StandardService extends LifecycleMBeanBase implements Service {
     protected void initInternal() throws LifecycleException {
 
         super.initInternal();
-
         if (engine != null) {
             engine.init();
         }
-
         // Initialize any Executors
         for (Executor executor : findExecutors()) {
             if (executor instanceof JmxEnabled) {
@@ -540,20 +538,16 @@ public class StandardService extends LifecycleMBeanBase implements Service {
             }
             executor.init();
         }
-
         // Initialize mapper listener
         mapperListener.init();
-
         // Initialize our defined Connectors
         synchronized (connectorsLock) {
             for (Connector connector : connectors) {
                 try {
                     connector.init();
                 } catch (Exception e) {
-                    String message = sm.getString(
-                            "standardService.connector.initFailed", connector);
+                    String message = sm.getString("standardService.connector.initFailed", connector);
                     log.error(message, e);
-
                     if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE"))
                         throw new LifecycleException(message);
                 }

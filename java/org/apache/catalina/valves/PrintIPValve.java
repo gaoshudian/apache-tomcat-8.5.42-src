@@ -7,9 +7,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
- * @author 【享学课堂】 King老师
- * 需要往期视频的同学加QQ：2068425757（肉兰老师）
- * 需要咨询VIP课程的同学加QQ：1011843464 （依娜老师）
+ * 自定义阀门
  */
 public class PrintIPValve extends ValveBase {
     @Override

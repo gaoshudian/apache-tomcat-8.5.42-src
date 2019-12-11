@@ -217,27 +217,22 @@ final class StandardHostValve extends ValveBase {
         }
         if (errorPage != null && response.isErrorReportRequired()) {
             response.setAppCommitted(false);
-            request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
-                              Integer.valueOf(statusCode));
+            request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, Integer.valueOf(statusCode));
 
             String message = response.getMessage();
             if (message == null) {
                 message = "";
             }
             request.setAttribute(RequestDispatcher.ERROR_MESSAGE, message);
-            request.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
-                    errorPage.getLocation());
-            request.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                    DispatcherType.ERROR);
+            request.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR, errorPage.getLocation());
+            request.setAttribute(Globals.DISPATCHER_TYPE_ATTR, DispatcherType.ERROR);
 
 
             Wrapper wrapper = request.getWrapper();
             if (wrapper != null) {
-                request.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME,
-                                  wrapper.getName());
+                request.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME, wrapper.getName());
             }
-            request.setAttribute(RequestDispatcher.ERROR_REQUEST_URI,
-                                 request.getRequestURI());
+            request.setAttribute(RequestDispatcher.ERROR_REQUEST_URI, request.getRequestURI());
             if (custom(request, response, errorPage)) {
                 response.setErrorReported();
                 try {
@@ -263,8 +258,7 @@ final class StandardHostValve extends ValveBase {
      * @param throwable The exception that occurred (which possibly wraps
      *  a root cause exception
      */
-    protected void throwable(Request request, Response response,
-                             Throwable throwable) {
+    protected void throwable(Request request, Response response, Throwable throwable) {
         Context context = request.getContext();
         if (context == null) {
             return;
@@ -282,9 +276,7 @@ final class StandardHostValve extends ValveBase {
         // If this is an aborted request from a client just log it and return
         if (realError instanceof ClientAbortException ) {
             if (log.isDebugEnabled()) {
-                log.debug
-                    (sm.getString("standardHost.clientAbort",
-                        realError.getCause().getMessage()));
+                log.debug(sm.getString("standardHost.clientAbort", realError.getCause().getMessage()));
             }
             return;
         }
@@ -297,25 +289,17 @@ final class StandardHostValve extends ValveBase {
         if (errorPage != null) {
             if (response.setErrorReported()) {
                 response.setAppCommitted(false);
-                request.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
-                        errorPage.getLocation());
-                request.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                        DispatcherType.ERROR);
-                request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
-                        Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-                request.setAttribute(RequestDispatcher.ERROR_MESSAGE,
-                                  throwable.getMessage());
-                request.setAttribute(RequestDispatcher.ERROR_EXCEPTION,
-                                  realError);
+                request.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR, errorPage.getLocation());
+                request.setAttribute(Globals.DISPATCHER_TYPE_ATTR, DispatcherType.ERROR);
+                request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+                request.setAttribute(RequestDispatcher.ERROR_MESSAGE, throwable.getMessage());
+                request.setAttribute(RequestDispatcher.ERROR_EXCEPTION, realError);
                 Wrapper wrapper = request.getWrapper();
                 if (wrapper != null) {
-                    request.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME,
-                                      wrapper.getName());
+                    request.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME, wrapper.getName());
                 }
-                request.setAttribute(RequestDispatcher.ERROR_REQUEST_URI,
-                                     request.getRequestURI());
-                request.setAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE,
-                                  realError.getClass());
+                request.setAttribute(RequestDispatcher.ERROR_REQUEST_URI, request.getRequestURI());
+                request.setAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE, realError.getClass());
                 if (custom(request, response, errorPage)) {
                     try {
                         response.finishResponse();
@@ -350,8 +334,7 @@ final class StandardHostValve extends ValveBase {
      * @param response The response being generated
      * @param errorPage The errorPage directive we are obeying
      */
-    private boolean custom(Request request, Response response,
-                             ErrorPage errorPage) {
+    private boolean custom(Request request, Response response, ErrorPage errorPage) {
 
         if (container.getLogger().isDebugEnabled()) {
             container.getLogger().debug("Processing " + errorPage);
@@ -359,14 +342,11 @@ final class StandardHostValve extends ValveBase {
 
         try {
             // Forward control to the specified location
-            ServletContext servletContext =
-                request.getContext().getServletContext();
-            RequestDispatcher rd =
-                servletContext.getRequestDispatcher(errorPage.getLocation());
+            ServletContext servletContext = request.getContext().getServletContext();
+            RequestDispatcher rd = servletContext.getRequestDispatcher(errorPage.getLocation());
 
             if (rd == null) {
-                container.getLogger().error(
-                    sm.getString("standardHostValue.customStatusFailed", errorPage.getLocation()));
+                container.getLogger().error(sm.getString("standardHostValue.customStatusFailed", errorPage.getLocation()));
                 return false;
             }
 

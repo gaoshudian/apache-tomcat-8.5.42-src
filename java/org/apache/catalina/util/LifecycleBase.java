@@ -345,8 +345,7 @@ public abstract class LifecycleBase implements Lifecycle {
      * @param state The new state for this component
      * @throws LifecycleException when attempting to set an invalid state
      */
-    protected synchronized void setState(LifecycleState state)
-            throws LifecycleException {
+    protected synchronized void setState(LifecycleState state) throws LifecycleException {
         setStateInternal(state, null, true);
     }
 
@@ -361,14 +360,12 @@ public abstract class LifecycleBase implements Lifecycle {
      * @param data  The data to pass to the associated {@link Lifecycle} event
      * @throws LifecycleException when attempting to set an invalid state
      */
-    protected synchronized void setState(LifecycleState state, Object data)
-            throws LifecycleException {
+    protected synchronized void setState(LifecycleState state, Object data) throws LifecycleException {
         setStateInternal(state, data, true);
     }
 
     //维护状态，同时在状态转换成功之后触发事件
-    private synchronized void setStateInternal(LifecycleState state,
-            Object data, boolean check) throws LifecycleException {
+    private synchronized void setStateInternal(LifecycleState state, Object data, boolean check) throws LifecycleException {
 
         if (log.isDebugEnabled()) {
             log.debug(sm.getString("lifecycleBase.setState", this, state));
@@ -390,12 +387,9 @@ public abstract class LifecycleBase implements Lifecycle {
             // stopInternal() permits STOPPING_PREP to STOPPING and FAILED to
             // STOPPING
             if (!(state == LifecycleState.FAILED ||
-                    (this.state == LifecycleState.STARTING_PREP &&
-                            state == LifecycleState.STARTING) ||
-                    (this.state == LifecycleState.STOPPING_PREP &&
-                            state == LifecycleState.STOPPING) ||
-                    (this.state == LifecycleState.FAILED &&
-                            state == LifecycleState.STOPPING))) {
+                    (this.state == LifecycleState.STARTING_PREP && state == LifecycleState.STARTING) ||
+                    (this.state == LifecycleState.STOPPING_PREP && state == LifecycleState.STOPPING) ||
+                    (this.state == LifecycleState.FAILED && state == LifecycleState.STOPPING))) {
                 // No other transition permitted
                 invalidTransition(state.name());
             }

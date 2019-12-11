@@ -72,8 +72,7 @@ public final class Mapper {
      * Mapping from Context object to Context version to support
      * RequestDispatcher mappings.
      */
-    private final Map<Context, ContextVersion> contextObjectToContextVersionMap =
-            new ConcurrentHashMap<>();
+    private final Map<Context, ContextVersion> contextObjectToContextVersionMap = new ConcurrentHashMap<>();
 
 
     // --------------------------------------------------------- Public Methods
@@ -100,8 +99,7 @@ public final class Mapper {
      * @param aliases Alias names for the virtual host
      * @param host Host object
      */
-    public synchronized void addHost(String name, String[] aliases,
-                                     Host host) {
+    public synchronized void addHost(String name, String[] aliases, Host host) {
         name = renameWildcardHost(name);
         MappedHost[] newHosts = new MappedHost[hosts.length + 1];
         MappedHost newHost = new MappedHost(name, host);
@@ -123,8 +121,7 @@ public final class Mapper {
                 }
                 newHost = duplicate;
             } else {
-                log.error(sm.getString("mapper.duplicateHost", name,
-                        duplicate.getRealHostName()));
+                log.error(sm.getString("mapper.duplicateHost", name, duplicate.getRealHostName()));
                 // Do not add aliases, as removeHost(hostName) won't be able to
                 // remove them
                 return;
@@ -237,8 +234,7 @@ public final class Mapper {
      * Replace {@link MappedHost#contextList} field in <code>realHost</code> and
      * all its aliases with a new value.
      */
-    private void updateContextList(MappedHost realHost,
-            ContextList newContextList) {
+    private void updateContextList(MappedHost realHost, ContextList newContextList) {
 
         realHost.contextList = newContextList;
         for (MappedHost alias : realHost.getAliases()) {
@@ -325,8 +321,7 @@ public final class Mapper {
      * @param path      Context path
      * @param version   Context version
      */
-    public void removeContextVersion(Context ctxt, String hostName,
-            String path, String version) {
+    public void removeContextVersion(Context ctxt, String hostName, String path, String version) {
 
         hostName = renameWildcardHost(hostName);
         contextObjectToContextVersionMap.remove(ctxt);
@@ -370,8 +365,7 @@ public final class Mapper {
      * @param contextPath Context path
      * @param version   Context version
      */
-    public void pauseContextVersion(Context ctxt, String hostName,
-            String contextPath, String version) {
+    public void pauseContextVersion(Context ctxt, String hostName, String contextPath, String version) {
         hostName = renameWildcardHost(hostName);
         ContextVersion contextVersion = findContextVersion(hostName,
                 contextPath, version, true);
@@ -382,8 +376,7 @@ public final class Mapper {
     }
 
 
-    private ContextVersion findContextVersion(String hostName,
-            String contextPath, String version, boolean silent) {
+    private ContextVersion findContextVersion(String hostName, String contextPath, String version, boolean silent) {
         MappedHost host = exactFind(hosts, hostName);
         if (host == null || host.isAlias()) {
             if (!silent) {
@@ -440,12 +433,9 @@ public final class Mapper {
      * @param contextVersion The context to which to add the wrappers
      * @param wrappers Information on wrapper mappings
      */
-    private void addWrappers(ContextVersion contextVersion,
-            Collection<WrapperMappingInfo> wrappers) {
+    private void addWrappers(ContextVersion contextVersion, Collection<WrapperMappingInfo> wrappers) {
         for (WrapperMappingInfo wrapper : wrappers) {
-            addWrapper(contextVersion, wrapper.getMapping(),
-                    wrapper.getWrapper(), wrapper.isJspWildCard(),
-                    wrapper.isResourceOnly());
+            addWrapper(contextVersion, wrapper.getMapping(), wrapper.getWrapper(), wrapper.isJspWildCard(), wrapper.isResourceOnly());
         }
     }
 
@@ -460,8 +450,7 @@ public final class Mapper {
      * @param resourceOnly true if this wrapper always expects a physical
      *                     resource to be present (such as a JSP)
      */
-    protected void addWrapper(ContextVersion context, String path,
-            Wrapper wrapper, boolean jspWildCard, boolean resourceOnly) {
+    protected void addWrapper(ContextVersion context, String path, Wrapper wrapper, boolean jspWildCard, boolean resourceOnly) {
 
         synchronized (context) {
             if (path.endsWith("/*")) {
@@ -524,11 +513,9 @@ public final class Mapper {
      * @param version     Context version this wrapper belongs to
      * @param path        Wrapper mapping
      */
-    public void removeWrapper(String hostName, String contextPath,
-            String version, String path) {
+    public void removeWrapper(String hostName, String contextPath, String version, String path) {
         hostName = renameWildcardHost(hostName);
-        ContextVersion contextVersion = findContextVersion(hostName,
-                contextPath, version, true);
+        ContextVersion contextVersion = findContextVersion(hostName, contextPath, version, true);
         if (contextVersion == null || contextVersion.isPaused()) {
             return;
         }
@@ -609,8 +596,7 @@ public final class Mapper {
      * @param version     The version of the given context
      * @param welcomeFile The welcome file to add
      */
-    public void addWelcomeFile(String hostName, String contextPath, String version,
-            String welcomeFile) {
+    public void addWelcomeFile(String hostName, String contextPath, String version, String welcomeFile) {
         hostName = renameWildcardHost(hostName);
         ContextVersion contextVersion = findContextVersion(hostName, contextPath, version, false);
         if (contextVersion == null) {
@@ -632,8 +618,7 @@ public final class Mapper {
      * @param version     The version of the given context
      * @param welcomeFile The welcome file to remove
      */
-    public void removeWelcomeFile(String hostName, String contextPath,
-            String version, String welcomeFile) {
+    public void removeWelcomeFile(String hostName, String contextPath, String version, String welcomeFile) {
         hostName = renameWildcardHost(hostName);
         ContextVersion contextVersion = findContextVersion(hostName, contextPath, version, false);
         if (contextVersion == null || contextVersion.isPaused()) {
@@ -687,8 +672,7 @@ public final class Mapper {
      * @throws IOException if the buffers are too small to hold the results of
      *                     the mapping.
      */
-    public void map(MessageBytes host, MessageBytes uri, String version,
-                    MappingData mappingData) throws IOException {
+    public void map(MessageBytes host, MessageBytes uri, String version, MappingData mappingData) throws IOException {
 
         if (host.isNull()) {
             host.getCharChunk().append(defaultHostName);
@@ -711,11 +695,9 @@ public final class Mapper {
      * @throws IOException if the buffers are too small to hold the results of
      *                     the mapping.
      */
-    public void map(Context context, MessageBytes uri,
-            MappingData mappingData) throws IOException {
+    public void map(Context context, MessageBytes uri, MappingData mappingData) throws IOException {
 
-        ContextVersion contextVersion =
-                contextObjectToContextVersionMap.get(context);
+        ContextVersion contextVersion = contextObjectToContextVersionMap.get(context);
         uri.toChars();
         CharChunk uricc = uri.getCharChunk();
         uricc.setLimit(-1);
@@ -729,8 +711,7 @@ public final class Mapper {
      * Map the specified URI.
      * @throws IOException
      */
-    private final void internalMap(CharChunk host, CharChunk uri,
-            String version, MappingData mappingData) throws IOException {
+    private final void internalMap(CharChunk host, CharChunk uri, String version, MappingData mappingData) throws IOException {
 
         if (mappingData.host != null) {
             // The legacy code (dating down at least to Tomcat 4.1) just
@@ -855,9 +836,7 @@ public final class Mapper {
      * @throws IOException if the buffers are too small to hold the results of
      *                     the mapping.
      */
-    private final void internalMapWrapper(ContextVersion contextVersion,
-                                          CharChunk path,
-                                          MappingData mappingData) throws IOException {
+    private final void internalMapWrapper(ContextVersion contextVersion, CharChunk path, MappingData mappingData) throws IOException {
 
         int pathOffset = path.getOffset();
         int pathEnd = path.getEnd();
@@ -1085,9 +1064,7 @@ public final class Mapper {
     /**
      * Wildcard mapping.
      */
-    private final void internalMapWildcardWrapper
-        (MappedWrapper[] wrappers, int nesting, CharChunk path,
-         MappingData mappingData) {
+    private final void internalMapWildcardWrapper(MappedWrapper[] wrappers, int nesting, CharChunk path, MappingData mappingData) {
 
         int pathEnd = path.getEnd();
 

@@ -80,14 +80,7 @@ final class StandardWrapperValve
 
 
     /**
-     * Invoke the servlet we are managing, respecting the rules regarding
-     * servlet lifecycle and SingleThreadModel support.
-     *
-     * @param request Request to be processed
-     * @param response Response to be produced
-     *
-     * @exception IOException if an input/output error occurred
-     * @exception ServletException if a servlet error occurred
+     * 调用真正的servlet得service()方法
      */
     @Override
     public final void invoke(Request request, Response response) throws IOException, ServletException {
@@ -212,8 +205,7 @@ final class StandardWrapperValve
         } catch (ServletException e) {
             Throwable rootCause = StandardWrapper.getRootCause(e);
             if (!(rootCause instanceof ClientAbortException)) {
-                container.getLogger().error(sm.getString("standardWrapper.serviceExceptionRoot", wrapper.getName(),
-                        context.getName(), e.getMessage()), rootCause);
+                container.getLogger().error(sm.getString("standardWrapper.serviceExceptionRoot", wrapper.getName(), context.getName(), e.getMessage()), rootCause);
             }
             throwable = e;
             exception(request, response, e);
@@ -254,8 +246,7 @@ final class StandardWrapperValve
             }
         } catch (Throwable e) {
             ExceptionUtils.handleThrowable(e);
-            container.getLogger().error(sm.getString("standardWrapper.unloadException",
-                             wrapper.getName()), e);
+            container.getLogger().error(sm.getString("standardWrapper.unloadException", wrapper.getName()), e);
             if (throwable == null) {
                 throwable = e;
                 exception(request, response, e);

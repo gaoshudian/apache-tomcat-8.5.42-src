@@ -98,18 +98,16 @@ public class MapperListener extends LifecycleMBeanBase implements ContainerListe
      */
     @Override
     public void startInternal() throws LifecycleException {
-
         setState(LifecycleState.STARTING);
-
         Engine engine = service.getContainer();
         if (engine == null) {
             return;
         }
-
+        //检查并设置mapper的defaultHostName属性
         findDefaultHost();
-
+        //对所有容器设置监听器
         addListeners(engine);
-
+        //注册engine下面的host、context和wrapper，registerHost会注册host及下面的子容器
         Container[] conHosts = engine.findChildren();
         for (Container conHost : conHosts) {
             Host host = (Host) conHost;
@@ -294,28 +292,28 @@ public class MapperListener extends LifecycleMBeanBase implements ContainerListe
         if(found) {
             mapper.setDefaultHostName(defaultHost);
         } else {
-            log.warn(sm.getString("mapperListener.unknownDefaultHost",
-                    defaultHost, service));
+            log.warn(sm.getString("mapperListener.unknownDefaultHost", defaultHost, service));
         }
     }
 
 
     /**
-     * Register host.
+     * 注册虚拟主机
      */
     private void registerHost(Host host) {
 
         String[] aliases = host.findAliases();
+        // 往mapper中添加主机
         mapper.addHost(host.getName(), aliases, host);
 
+        // 注册host下的每个context
         for (Container container : host.findChildren()) {
             if (container.getState().isAvailable()) {
                 registerContext((Context) container);
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug(sm.getString("mapperListener.registerHost",
-                    host.getName(), domain, service));
+            log.debug(sm.getString("mapperListener.registerHost", host.getName(), domain, service));
         }
     }
 
@@ -383,18 +381,14 @@ public class MapperListener extends LifecycleMBeanBase implements ContainerListe
             prepareWrapperMappingInfo(context, (Wrapper) container, wrappers);
 
             if(log.isDebugEnabled()) {
-                log.debug(sm.getString("mapperListener.registerWrapper",
-                        container.getName(), contextPath, service));
+                log.debug(sm.getString("mapperListener.registerWrapper", container.getName(), contextPath, service));
             }
         }
 
-        mapper.addContextVersion(host.getName(), host, contextPath,
-                context.getWebappVersion(), context, welcomeFiles, resources,
-                wrappers);
+        mapper.addContextVersion(host.getName(), host, contextPath, context.getWebappVersion(), context, welcomeFiles, resources, wrappers);
 
         if(log.isDebugEnabled()) {
-            log.debug(sm.getString("mapperListener.registerContext",
-                    contextPath, service));
+            log.debug(sm.getString("mapperListener.registerContext", contextPath, service));
         }
     }
 
@@ -514,8 +508,10 @@ public class MapperListener extends LifecycleMBeanBase implements ContainerListe
      * @param container
      */
     private void addListeners(Container container) {
+        // 对当前容器添加容器监听器和生命周期监听器，也就是当前对象
         container.addContainerListener(this);
         container.addLifecycleListener(this);
+        // 对当前容器下的子容器执行addListeners操作
         for (Container child : container.findChildren()) {
             addListeners(child);
         }
