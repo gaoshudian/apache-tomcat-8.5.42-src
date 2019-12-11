@@ -243,8 +243,7 @@ public class Http11Processor extends AbstractProcessor {
         outputBuffer.addFilter(new IdentityOutputFilter());
 
         // Create and add the chunked filters.
-        inputBuffer.addFilter(new ChunkedInputFilter(maxTrailerSize, allowedTrailerHeaders,
-                maxExtensionSize, maxSwallowSize));
+        inputBuffer.addFilter(new ChunkedInputFilter(maxTrailerSize, allowedTrailerHeaders, maxExtensionSize, maxSwallowSize));
         outputBuffer.addFilter(new ChunkedOutputFilter());
 
         // Create and add the void filters.
@@ -658,6 +657,9 @@ public class Http11Processor extends AbstractProcessor {
     }
 
 
+    /**
+     * 将Endpoint接收到的socket封装成request,调用Adapter.service()方法，将生成的Request和Response对象传进去
+     */
     @Override
     public SocketState service(SocketWrapperBase<?> socketWrapper) throws IOException {
         RequestInfo rp = request.getRequestProcessor();
@@ -755,10 +757,7 @@ public class Http11Processor extends AbstractProcessor {
                         response.setHeader("Upgrade", requestedProtocol);
                         action(ActionCode.CLOSE,  null);
                         getAdapter().log(request, response, 0);
-
-                        InternalHttpUpgradeHandler upgradeHandler =
-                                upgradeProtocol.getInternalUpgradeHandler(
-                                        getAdapter(), cloneRequest(request));
+                        InternalHttpUpgradeHandler upgradeHandler = upgradeProtocol.getInternalUpgradeHandler(getAdapter(), cloneRequest(request));
                         UpgradeToken upgradeToken = new UpgradeToken(upgradeHandler, null, null);
                         action(ActionCode.UPGRADE, upgradeToken);
                         return SocketState.UPGRADING;
@@ -792,6 +791,7 @@ public class Http11Processor extends AbstractProcessor {
             if (getErrorState().isIoAllowed()) {
                 try {
                     rp.setStage(org.apache.coyote.Constants.STAGE_SERVICE);
+                    //核心方法，通过adapter去调用容器处理请求
                     getAdapter().service(request, response);
                     // Handle when the response was committed before a serious
                     // error occurred.  Throwing a ServletException should both
@@ -857,14 +857,10 @@ public class Http11Processor extends AbstractProcessor {
                     socketWrapper.setReadTimeout(0);
                 }
             }
-
             rp.setStage(org.apache.coyote.Constants.STAGE_KEEPALIVE);
-
             sendfileState = processSendfile(socketWrapper);
         }
-
         rp.setStage(org.apache.coyote.Constants.STAGE_ENDED);
-
         if (getErrorState().isError() || endpoint.isPaused()) {
             return SocketState.CLOSED;
         } else if (isAsync()) {

@@ -81,8 +81,7 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
     }
 
 
-    protected AbstractProcessor(AbstractEndpoint<?> endpoint, Request coyoteRequest,
-            Response coyoteResponse) {
+    protected AbstractProcessor(AbstractEndpoint<?> endpoint, Request coyoteRequest, Response coyoteResponse) {
         this.endpoint = endpoint;
         asyncStateMachine = new AsyncStateMachine(this);
         request = coyoteRequest;
